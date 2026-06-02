@@ -209,6 +209,7 @@ function update() {
 // --- CONTROLS ---
 
 function handleJump(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return;
     if (e.target.tagName === 'BUTTON') return;
     
