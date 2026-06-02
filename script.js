@@ -705,7 +705,7 @@ async function callGeminiAPI(messages, apiKey) {
         },
         body: JSON.stringify({
             contents: messages,
-            systemInstruction: {
+            system_instruction: {
                 parts: [
                     { text: systemPrompt }
                 ]
