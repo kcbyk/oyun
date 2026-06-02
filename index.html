@@ -69,7 +69,7 @@
 <div id="admin-panel" class="hidden">
     <div class="admin-box">
         <h2>Gizli Aşk Paneli 🛠️</h2>
-        <p class="admin-desc">Teklif ekranındaki aşk mesajlarını düzenleyebilir, silebilir veya yenilerini ekleyebilirsiniz.</p>
+        <p class="admin-desc">Teklif ekranındaki aşk mesajlarını düzenleyebilir ve yapay zeka kişilik testi için Gemini API anahtarınızı tanımlayabilirsiniz.</p>
         
         <div id="message-list-container">
             <ul id="admin-msg-list"></ul>
@@ -78,6 +78,11 @@
         <div class="admin-add-row">
             <input type="text" id="input-new-msg" placeholder="Yeni bir aşk sözü yazın..." maxlength="150">
             <button id="btn-add-msg">Ekle ➕</button>
+        </div>
+
+        <div class="admin-api-key-row" style="display: flex; flex-direction: column; gap: 6px; width: 100%; margin-top: 5px;">
+            <label for="input-api-key" style="font-size: 13px; color: #00d2ff; text-align: left; font-weight: bold;">Gemini API Anahtarı:</label>
+            <input type="password" id="input-api-key" placeholder="AI Sohbeti için API Anahtarınızı girin..." style="width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(0, 210, 255, 0.3); border-radius: 8px; padding: 10px 15px; color: #fff; font-size: 14px; outline: none;">
         </div>
         
         <div class="admin-actions">
@@ -90,13 +95,19 @@
 <!-- ===== KİŞİLİK TESTİ EKRANI ===== -->
 <div id="personality-screen" class="hidden">
     <div id="personality-hearts"></div>
-    <div id="quiz-box">
-        <div id="quiz-progress">Soru 1 / 5</div>
-        <h2 id="quiz-question">Yükleniyor...</h2>
-        
-        <div id="quiz-options">
-            <!-- Seçenekler dinamik yüklenecek -->
+    <div id="chat-box">
+        <div id="chat-header">
+            <span>Kişilik & Aşk Analizi 🧠</span>
+            <button id="btn-chat-close-top">✕</button>
         </div>
+        <div id="chat-history">
+            <!-- Mesajlar dinamik gelecek -->
+        </div>
+        <div id="chat-input-row">
+            <input type="text" id="chat-input" placeholder="Cevabınızı buraya yazın..." maxlength="250">
+            <button id="btn-send-chat">Gönder ➔</button>
+        </div>
+        <button id="btn-show-result" class="hidden">Analizi Tamamla & Sonucu Gör ✨</button>
     </div>
     
     <div id="quiz-result-box" class="hidden">

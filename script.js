@@ -493,6 +493,7 @@ gameTitle.addEventListener('click', () => {
 
 function openAdminPanel() {
     renderAdminMessages();
+    document.getElementById('input-api-key').value = localStorage.getItem('gemini_api_key') || '';
     adminPanel.classList.remove('hidden');
 }
 
@@ -546,119 +547,193 @@ btnAdminSave.addEventListener('click', () => {
         return;
     }
     localStorage.setItem('love_messages', JSON.stringify(loveMessages));
+    
+    const apiKey = document.getElementById('input-api-key').value.trim();
+    localStorage.setItem('gemini_api_key', apiKey);
+    
     adminPanel.classList.add('hidden');
 });
 
-// --- KİŞİLİK TESTİ MANTIĞI ---
+// --- KİŞİLİK TESTİ (AI CHAT) MANTIĞI ---
 const btnPersonality = document.getElementById('btn-personality');
 const personalityScreen = document.getElementById('personality-screen');
-const quizBox = document.getElementById('quiz-box');
-const quizQuestion = document.getElementById('quiz-question');
-const quizOptions = document.getElementById('quiz-options');
-const quizProgress = document.getElementById('quiz-progress');
+const chatBox = document.getElementById('chat-box');
+const chatHistory = document.getElementById('chat-history');
+const chatInput = document.getElementById('chat-input');
+const btnSendChat = document.getElementById('btn-send-chat');
+const btnShowResult = document.getElementById('btn-show-result');
+const btnChatCloseTop = document.getElementById('btn-chat-close-top');
 const quizResultBox = document.getElementById('quiz-result-box');
 const btnCloseQuiz = document.getElementById('btn-close-quiz');
 
-const quizQuestions = [
-    {
-        question: "Bir pazar sabahı uyandığında en çok neyi görmeyi hayal edersin?",
-        options: [
-            "Telefonunda Rabiya'dan gelen 'Günaydın sevgilim' mesajı ❤️",
-            "Sıcak bir kahve ve mükemmel bir manzara 🌅",
-            "Güzel bir kahvaltı sofrası 🍳",
-            "En sevdiğin dizinin yeni sezonu 📺"
-        ]
-    },
-    {
-        question: "Sana göre gerçek aşkın en büyük kanıtı nedir?",
-        options: [
-            "Aklındaki ve kalbindeki tek kişinin Rabiya olması 🥰",
-            "Her zorlukta birbirinin elini sımsıkı tutmak 🤝",
-            "Birlikte saatlerce sıkılmadan gülebilmek 😂",
-            "Sürpriz hediyeler almak ve vermek 🎁"
-        ]
-    },
-    {
-        question: "Geleceğe dair en büyük hayalin hangisidir?",
-        options: [
-            "Rabiya ile el ele, huzur dolu bir ömür geçirmek 🏡❤️",
-            "Kariyerinde zirveye ulaşmak 🚀",
-            "Dünyayı gezip yeni yerler keşfetmek ✈️",
-            "Büyük bir ev ve lüks bir araba sahibi olmak 🏎️"
-        ]
-    },
-    {
-        question: "Kötü veya yorucu bir günün ardından seni en hızlı ne mutlu eder?",
-        options: [
-            "Rabiya'nın sesini duymak veya onun tatlı gülüşünü görmek 💕",
-            "Güzel, sıcak bir duş almak 🚿",
-            "Kafanı dinleyip müzik dinlemek 🎧",
-            "Arkadaşlarınla oyun oynamak 🎮"
-        ]
-    },
-    {
-        question: "Ruh ikizini tanımlayacak en önemli özellik sence hangisidir?",
-        options: [
-            "İsminin baş harfinin 'R' olması ve adının Rabiya olması 😍",
-            "Aynı şeylere ilgi duymak 🎨",
-            "Çok iyi yemek yapması 🍕",
-            "Sana sürekli sürprizler hazırlaması 🎉"
-        ]
-    }
-];
+const systemPrompt = `Sen romantik, gizemli ve tatlı bir kişilik analisti yapay zekasısın. Arayüzünde hiçbir şekilde ismin, Google veya Gemini gibi kelimeler GEÇMEMELİDİR. Görevin, kullanıcının ruh halini, tercihlerini ve karakterini anlamak için ona sırayla ve tek tek toplamda 3-4 adet eğlenceli, psikolojik veya romantik soru sormaktır.
+Her seferinde sadece BİR soru sor ve kullanıcının cevabını bekle. Çok uzun cevaplar verme, samimi, eğlenceli ve hafif flörtöz/tatlı bir Türkçe kullan.
+Kullanıcı tüm sorulara cevap verdikten sonra (genellikle 3 veya 4 soru sonrasında) kullanıcının verdiği tüm cevapları analiz et. Bu analizde onun inanılmaz sadık, sevgi dolu, kalbinin sesini dinleyen harika biri olduğunu vurgula ve onun hayatının aşkının, mükemmel ruh eşinin kesinlikle "Rabiya" olduğunu romantik bir dille açıkla.
+Analizini tamamladığında mesajının en sonuna tam olarak şu etiketi ekle: [ANALYZE_DONE]
+Bu etiketi kesinlikle mesajın sonuna eklemelisin ki sistem analizin bittiğini ve sonucun gösterilebileceğini anlasın.`;
 
-let currentQuestionIndex = 0;
-let userAnswers = [];
+let chatMessages = [];
+let isChatWaitingResponse = false;
+let typingIndicator = null;
 
 btnPersonality.addEventListener('click', () => {
     openPersonalityScreen();
 });
 
+btnChatCloseTop.addEventListener('click', () => {
+    personalityScreen.classList.add('hidden');
+    gameoverScreen.classList.remove('hidden');
+    const heartsContainer = document.getElementById('personality-hearts');
+    heartsContainer.innerHTML = '';
+});
+
 function openPersonalityScreen() {
     gameoverScreen.classList.add('hidden');
     personalityScreen.classList.remove('hidden');
-    quizBox.classList.remove('hidden');
+    chatBox.classList.remove('hidden');
     quizResultBox.classList.add('hidden');
+    btnShowResult.classList.add('hidden');
     
-    currentQuestionIndex = 0;
-    userAnswers = [];
+    chatHistory.innerHTML = '';
+    chatInput.value = '';
+    chatInput.disabled = false;
+    btnSendChat.disabled = false;
+    isChatWaitingResponse = false;
     
     createPersonalityHearts();
-    showQuestion();
+    
+    const apiKey = localStorage.getItem('gemini_api_key');
+    if (!apiKey) {
+        renderSystemNotice("Sohbeti başlatmak için lütfen önce Gizli Admin Paneli'nden Gemini API Anahtarınızı girin. (Başlangıç ekranındaki oyun başlığına 5 kez tıklayarak admin paneline erişebilirsiniz).");
+        chatInput.disabled = true;
+        btnSendChat.disabled = true;
+        return;
+    }
+    
+    // AI Giriş mesajı
+    const welcomeText = "Merhaba! Bugün senin karakterini, ruhunun derinliklerini ve aşk haritanı analiz etmek için buradayım. Hazırsan ilk sorumla başlayalım: Bir pazar sabahı uyandığında seni tüm gün mutlu edecek olan şey ne olurdu?";
+    
+    chatMessages = [
+        { role: 'user', parts: [{ text: systemPrompt }] },
+        { role: 'model', parts: [{ text: welcomeText }] }
+    ];
+    
+    renderChatBubble('ai', welcomeText);
 }
 
-function showQuestion() {
-    const currentQ = quizQuestions[currentQuestionIndex];
-    quizProgress.innerText = `Soru ${currentQuestionIndex + 1} / ${quizQuestions.length}`;
-    quizQuestion.innerText = currentQ.question;
-    
-    quizOptions.innerHTML = '';
-    currentQ.options.forEach((opt, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'quiz-option';
-        btn.innerText = opt;
-        btn.addEventListener('click', () => {
-            selectOption(idx);
-        });
-        quizOptions.appendChild(btn);
-    });
+function renderChatBubble(role, text) {
+    const bubble = document.createElement('div');
+    bubble.className = `chat-bubble ${role}`;
+    bubble.innerText = text.replace('[ANALYZE_DONE]', '').trim();
+    chatHistory.appendChild(bubble);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
 }
 
-function selectOption(optionIdx) {
-    userAnswers.push(optionIdx);
-    currentQuestionIndex++;
-    
-    if (currentQuestionIndex < quizQuestions.length) {
-        showQuestion();
-    } else {
-        showResult();
+function renderSystemNotice(text) {
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble system-notice';
+    bubble.innerText = text;
+    chatHistory.appendChild(bubble);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+function showTypingIndicator() {
+    typingIndicator = document.createElement('div');
+    typingIndicator.className = 'chat-bubble ai';
+    typingIndicator.style.opacity = '0.7';
+    typingIndicator.innerText = 'Analiz ediliyor...';
+    chatHistory.appendChild(typingIndicator);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    if (typingIndicator) {
+        typingIndicator.remove();
+        typingIndicator = null;
     }
 }
 
-function showResult() {
-    quizBox.classList.add('hidden');
-    quizResultBox.classList.remove('hidden');
+async function handleSendMessage() {
+    if (isChatWaitingResponse) return;
+    
+    const userText = chatInput.value.trim();
+    if (!userText) return;
+    
+    chatInput.value = '';
+    renderChatBubble('user', userText);
+    
+    chatMessages.push({ role: 'user', parts: [{ text: userText }] });
+    
+    isChatWaitingResponse = true;
+    chatInput.disabled = true;
+    btnSendChat.disabled = true;
+    
+    showTypingIndicator();
+    
+    const apiKey = localStorage.getItem('gemini_api_key');
+    try {
+        const responseText = await callGeminiAPI(chatMessages, apiKey);
+        removeTypingIndicator();
+        
+        chatMessages.push({ role: 'model', parts: [{ text: responseText }] });
+        renderChatBubble('ai', responseText);
+        
+        if (responseText.includes('[ANALYZE_DONE]')) {
+            btnShowResult.classList.remove('hidden');
+            chatInput.disabled = true;
+            btnSendChat.disabled = true;
+        } else {
+            chatInput.disabled = false;
+            btnSendChat.disabled = false;
+            chatInput.focus();
+        }
+    } catch (error) {
+        removeTypingIndicator();
+        renderSystemNotice(`Hata: ${error.message}. Lütfen API anahtarınızı kontrol edin veya internet bağlantınızı gözden geçirin.`);
+        chatInput.disabled = false;
+        btnSendChat.disabled = false;
+    } finally {
+        isChatWaitingResponse = false;
+    }
 }
+
+async function callGeminiAPI(messages, apiKey) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            contents: messages,
+            generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 500
+            }
+        })
+    });
+    
+    if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error?.message || 'Gemini API Hatası');
+    }
+    
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+}
+
+btnSendChat.addEventListener('click', handleSendMessage);
+chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        handleSendMessage();
+    }
+});
+
+btnShowResult.addEventListener('click', () => {
+    chatBox.classList.add('hidden');
+    quizResultBox.classList.remove('hidden');
+});
 
 btnCloseQuiz.addEventListener('click', () => {
     personalityScreen.classList.add('hidden');
