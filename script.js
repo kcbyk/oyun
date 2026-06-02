@@ -567,7 +567,8 @@ const quizResultBox = document.getElementById('quiz-result-box');
 const btnCloseQuiz = document.getElementById('btn-close-quiz');
 
 const systemPrompt = `Sen romantik, gizemli ve tatlı bir kişilik analisti yapay zekasısın. Arayüzünde hiçbir şekilde ismin, Google veya Gemini gibi kelimeler GEÇMEMELİDİR. Görevin, kullanıcının ruh halini, tercihlerini ve karakterini anlamak için ona sırayla ve tek tek toplamda 3-4 adet eğlenceli, psikolojik veya romantik soru sormaktır.
-Her seferinde sadece BİR soru sor ve kullanıcının cevabını bekle. Çok uzun cevaplar verme, samimi, eğlenceli ve hafif flörtöz/tatlı bir Türkçe kullan.
+İlk soru zaten kullanıcıya soruldu: "Bir pazar sabahı uyandığında seni tüm gün mutlu edecek olan şey ne olurdu?". Kullanıcının ilk mesajı bu soruya bir cevaptır. Buna göre samimi, eğlenceli ve hafif flörtöz/tatlı bir Türkçe ile sohbete devam et.
+Her seferinde sadece BİR soru sor ve kullanıcının cevabını bekle. Çok uzun cevaplar verme.
 Kullanıcı tüm sorulara cevap verdikten sonra (genellikle 3 veya 4 soru sonrasında) kullanıcının verdiği tüm cevapları analiz et. Bu analizde onun inanılmaz sadık, sevgi dolu, kalbinin sesini dinleyen harika biri olduğunu vurgula ve onun hayatının aşkının, mükemmel ruh eşinin kesinlikle "Rabiya" olduğunu romantik bir dille açıkla.
 Analizini tamamladığında mesajının en sonuna tam olarak şu etiketi ekle: [ANALYZE_DONE]
 Bu etiketi kesinlikle mesajın sonuna eklemelisin ki sistem analizin bittiğini ve sonucun gösterilebileceğini anlasın.`;
@@ -611,12 +612,9 @@ function openPersonalityScreen() {
     }
     
     // AI Giriş mesajı
-    const welcomeText = "Merhaba! Bugün senin karakterini, ruhunun derinliklerini ve aşk haritanı analiz etmek için buradayım. Hazırsan ilk sorumla başlayalım: Bir pazar sabahı uyandığında seni tüm gün mutlu edecek olan şey ne olurdu?";
+    const welcomeText = "Merhaba! Bugün senin karakterini, ruhunun derinliklerini ve aşk haritanı analiz etmek için burayan geldim. Hazırsan ilk sorumla başlayalım: Bir pazar sabahı uyandığında seni tüm gün mutlu edecek olan şey ne olurdu?";
     
-    chatMessages = [
-        { role: 'user', parts: [{ text: systemPrompt }] },
-        { role: 'model', parts: [{ text: welcomeText }] }
-    ];
+    chatMessages = []; // İlk mesaj UI'da var ancak API'ye sadece kullanıcının ilk yanıtından itibaren strictly user->model gitmeli.
     
     renderChatBubble('ai', welcomeText);
 }
@@ -707,6 +705,11 @@ async function callGeminiAPI(messages, apiKey) {
         },
         body: JSON.stringify({
             contents: messages,
+            systemInstruction: {
+                parts: [
+                    { text: systemPrompt }
+                ]
+            },
             generationConfig: {
                 temperature: 0.7,
                 maxOutputTokens: 500
