@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sürpriz Koşu</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="game-wrap">
+
+    <!-- ===== OYUN EKRANI ===== -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+        <div id="hud-score">🏃 <span id="score-val">0</span></div>
+        <div id="hud-best">🏆 <span id="best-val">0</span></div>
+    </div>
+
+    <!-- Başlangıç Ekranı -->
+    <div id="start-screen" class="screen">
+        <h1>Gece Koşusu</h1>
+        <p>Zıplamak için dokun veya <b>BOŞLUK</b> tuşuna bas</p>
+        <button id="btn-start">Başla ▶</button>
+    </div>
+
+    <!-- Ölüm Ekranı -->
+    <div id="gameover-screen" class="screen hidden">
+        <h1>💀 Oyun Bitti</h1>
+        <p>Skor: <span id="go-score">0</span></p>
+        <p>En İyi: <span id="go-best">0</span></p>
+        <button id="btn-restart">Tekrar Oyna ↺</button>
+    </div>
+
+    <!-- Warp Flash -->
+    <div id="warp-flash" class="hidden"></div>
+
+</div>
+
+<!-- ===== TEKLİF EKRANI ===== -->
+<div id="proposal-screen" class="hidden">
+    <div id="hearts-bg"></div>
+
+    <div id="msg-box">
+        <p id="msg-text" class="love-text"></p>
+        <div id="tap-hint">Devam etmek için dokun ✨</div>
+    </div>
+
+    <div id="final-q" class="hidden">
+        <p class="proposal-title">Benimle çıkar mısın? 💌</p>
+        <div id="btn-row">
+            <button id="btn-yes">Evet! ❤️</button>
+            <button id="btn-no">Hayır</button>
+        </div>
+    </div>
+
+    <div id="success-msg" class="hidden">
+        <h1>Seni Çok Seviyorum ❤️</h1>
+        <p>Dünyanın en mutlu insanı yaptın beni...</p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
