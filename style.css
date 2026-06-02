@@ -377,3 +377,312 @@ button:hover, button:active {
     0% { transform: scale(1); }
     100% { transform: scale(1.06); }
 }
+
+/* ===== GİZLİ ADMİN PANELİ ===== */
+#admin-panel {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 5, 11, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.admin-box {
+    width: 90%;
+    max-width: 550px;
+    background: rgba(20, 8, 30, 0.7);
+    border: 1px solid rgba(255, 0, 255, 0.25);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 90%;
+}
+
+.admin-box h2 {
+    font-size: 28px;
+    color: #ff00ff;
+    text-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+    text-align: center;
+}
+
+.admin-desc {
+    font-size: 14px;
+    color: #ffd3e0;
+    text-align: center;
+    line-height: 1.4;
+}
+
+#message-list-container {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 12px;
+    padding: 10px;
+    max-height: 250px;
+}
+
+#admin-msg-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#admin-msg-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border-left: 3px solid #ff00ff;
+    gap: 10px;
+    font-size: 14px;
+}
+
+#admin-msg-list li span {
+    flex: 1;
+    word-break: break-word;
+    color: #fff;
+    text-align: left;
+}
+
+.admin-btn-delete {
+    background: transparent;
+    border: 1px solid #ff1744;
+    color: #ff1744;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: none;
+    box-shadow: none;
+    transition: 0.2s;
+    width: auto;
+}
+
+.admin-btn-delete:hover {
+    background: #ff1744;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(255, 23, 68, 0.5);
+    transform: none;
+}
+
+.admin-add-row {
+    display: flex;
+    gap: 10px;
+}
+
+.admin-add-row input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.admin-add-row input:focus {
+    border-color: #00d2ff;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+}
+
+.admin-add-row button {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+    width: auto;
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.admin-actions button {
+    flex: 1;
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 8px;
+}
+
+.btn-secondary {
+    border-color: #ff5252;
+    box-shadow: 0 0 10px rgba(255, 82, 82, 0.2);
+}
+
+.btn-secondary:hover {
+    background: #ff5252;
+    color: #000;
+    box-shadow: 0 0 20px #ff5252;
+}
+
+/* ===== KİŞİLİK TESTİ EKRANI ===== */
+#personality-screen {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 50% 50%, #150527 0%, #050209 100%);
+    z-index: 80;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow: hidden;
+}
+
+#personality-hearts {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 81;
+}
+
+#quiz-box, #quiz-result-box {
+    position: relative;
+    z-index: 85;
+    width: 95%;
+    max-width: 520px;
+    background: rgba(20, 8, 30, 0.55);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 40px 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 
+                0 0 30px rgba(0, 210, 255, 0.15), 
+                inset 0 0 15px rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: popIn 0.5s ease-out forwards;
+}
+
+#quiz-progress {
+    font-size: 14px;
+    color: #00d2ff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+}
+
+#quiz-question {
+    font-size: 22px;
+    color: #fff;
+    text-align: center;
+    line-height: 1.4;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.quiz-option {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    text-transform: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.quiz-option:hover {
+    background: rgba(0, 210, 255, 0.15);
+    border-color: #00d2ff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 210, 255, 0.3);
+}
+
+.quiz-option:active {
+    transform: translateY(1px);
+}
+
+/* Kişilik Testi Sonuç Sayfası */
+#quiz-result-box {
+    text-align: center;
+    align-items: center;
+    border: 1px solid rgba(255, 0, 255, 0.3);
+    box-shadow: 0 0 40px rgba(255, 0, 255, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+#quiz-result-box h2 {
+    font-size: 26px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.result-badge {
+    background: linear-gradient(45deg, #ff00ff 0%, #00d2ff 100%);
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-size: 20px;
+    margin: 10px 0;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+    animation: heartbeat 1.5s infinite alternate ease-in-out;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+#result-text-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff00ff;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.4);
+    margin-bottom: 5px;
+}
+
+#quiz-result-box p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #ffd3e0;
+}
+
+#quiz-result-box p strong {
+    color: #ff00ff;
+    text-shadow: 0 0 8px rgba(255, 0, 255, 0.4);
+}
+
+#btn-close-quiz {
+    margin-top: 15px;
+    width: 100%;
+    max-width: 250px;
+    font-size: 18px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    border-color: #ff00ff;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+}
+
+#btn-close-quiz:hover {
+    background: #ff00ff;
+    color: #000;
+    box-shadow: 0 0 25px #ff00ff;
+}

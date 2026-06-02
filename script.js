@@ -270,13 +270,15 @@ player.draw();
 
 // --- SÜRPRİZ TEKLİF MANTIĞI ---
 
-const loveMessages = [
-    "Rabia...",
+const defaultLoveMessages = [
+    "Rabiya...",
     "Hayatıma girdiğin günden beri her şey çok farklı...",
     "Gülüşün, bakışın, bana seslenişin...",
     "Seninle geçen her an, zamanın durmasını istediğim eşsiz bir büyüye dönüşüyor.",
     "Benim için sadece bir ihtimal değil, tek gerçeğimsin."
 ];
+
+let loveMessages = JSON.parse(localStorage.getItem('love_messages')) || [...defaultLoveMessages];
 
 let msgIndex = 0;
 const msgText = document.getElementById('msg-text');
@@ -461,3 +463,234 @@ btnYes.addEventListener('click', () => {
     document.getElementById('success-msg').classList.remove('hidden');
     btnNo.classList.add('hidden');
 });
+
+// --- ADMİN PANELİ MANTIĞI ---
+const gameTitle = document.getElementById('game-title');
+const adminPanel = document.getElementById('admin-panel');
+const adminMsgList = document.getElementById('admin-msg-list');
+const inputNewMsg = document.getElementById('input-new-msg');
+const btnAddMsg = document.getElementById('btn-add-msg');
+const btnAdminReset = document.getElementById('btn-admin-reset');
+const btnAdminSave = document.getElementById('btn-admin-save');
+
+let titleClickCount = 0;
+let titleClickTimer = null;
+
+// Başlık 5 kez tıklanınca admin panelini aç
+gameTitle.addEventListener('click', () => {
+    titleClickCount++;
+    clearTimeout(titleClickTimer);
+    titleClickTimer = setTimeout(() => {
+        titleClickCount = 0;
+    }, 2000); // 2 saniye içinde tıklanmalı
+
+    if (titleClickCount >= 5) {
+        titleClickCount = 0;
+        openAdminPanel();
+    }
+});
+
+function openAdminPanel() {
+    renderAdminMessages();
+    adminPanel.classList.remove('hidden');
+}
+
+function renderAdminMessages() {
+    adminMsgList.innerHTML = '';
+    loveMessages.forEach((msg, idx) => {
+        const li = document.createElement('li');
+        
+        const span = document.createElement('span');
+        span.innerText = msg;
+        li.appendChild(span);
+        
+        const delBtn = document.createElement('button');
+        delBtn.className = 'admin-btn-delete';
+        delBtn.innerText = 'Sil 🗑️';
+        delBtn.addEventListener('click', () => {
+            loveMessages.splice(idx, 1);
+            renderAdminMessages();
+        });
+        li.appendChild(delBtn);
+        
+        adminMsgList.appendChild(li);
+    });
+}
+
+btnAddMsg.addEventListener('click', () => {
+    const newText = inputNewMsg.value.trim();
+    if (newText) {
+        loveMessages.push(newText);
+        inputNewMsg.value = '';
+        renderAdminMessages();
+    }
+});
+
+inputNewMsg.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        btnAddMsg.click();
+    }
+});
+
+btnAdminReset.addEventListener('click', () => {
+    if (confirm('Tüm aşk sözlerini varsayılana sıfırlamak istiyor musunuz?')) {
+        loveMessages = [...defaultLoveMessages];
+        renderAdminMessages();
+    }
+});
+
+btnAdminSave.addEventListener('click', () => {
+    if (loveMessages.length === 0) {
+        alert('En az bir adet aşk sözü eklemelisiniz!');
+        return;
+    }
+    localStorage.setItem('love_messages', JSON.stringify(loveMessages));
+    adminPanel.classList.add('hidden');
+});
+
+// --- KİŞİLİK TESTİ MANTIĞI ---
+const btnPersonality = document.getElementById('btn-personality');
+const personalityScreen = document.getElementById('personality-screen');
+const quizBox = document.getElementById('quiz-box');
+const quizQuestion = document.getElementById('quiz-question');
+const quizOptions = document.getElementById('quiz-options');
+const quizProgress = document.getElementById('quiz-progress');
+const quizResultBox = document.getElementById('quiz-result-box');
+const btnCloseQuiz = document.getElementById('btn-close-quiz');
+
+const quizQuestions = [
+    {
+        question: "Bir pazar sabahı uyandığında en çok neyi görmeyi hayal edersin?",
+        options: [
+            "Telefonunda Rabiya'dan gelen 'Günaydın sevgilim' mesajı ❤️",
+            "Sıcak bir kahve ve mükemmel bir manzara 🌅",
+            "Güzel bir kahvaltı sofrası 🍳",
+            "En sevdiğin dizinin yeni sezonu 📺"
+        ]
+    },
+    {
+        question: "Sana göre gerçek aşkın en büyük kanıtı nedir?",
+        options: [
+            "Aklındaki ve kalbindeki tek kişinin Rabiya olması 🥰",
+            "Her zorlukta birbirinin elini sımsıkı tutmak 🤝",
+            "Birlikte saatlerce sıkılmadan gülebilmek 😂",
+            "Sürpriz hediyeler almak ve vermek 🎁"
+        ]
+    },
+    {
+        question: "Geleceğe dair en büyük hayalin hangisidir?",
+        options: [
+            "Rabiya ile el ele, huzur dolu bir ömür geçirmek 🏡❤️",
+            "Kariyerinde zirveye ulaşmak 🚀",
+            "Dünyayı gezip yeni yerler keşfetmek ✈️",
+            "Büyük bir ev ve lüks bir araba sahibi olmak 🏎️"
+        ]
+    },
+    {
+        question: "Kötü veya yorucu bir günün ardından seni en hızlı ne mutlu eder?",
+        options: [
+            "Rabiya'nın sesini duymak veya onun tatlı gülüşünü görmek 💕",
+            "Güzel, sıcak bir duş almak 🚿",
+            "Kafanı dinleyip müzik dinlemek 🎧",
+            "Arkadaşlarınla oyun oynamak 🎮"
+        ]
+    },
+    {
+        question: "Ruh ikizini tanımlayacak en önemli özellik sence hangisidir?",
+        options: [
+            "İsminin baş harfinin 'R' olması ve adının Rabiya olması 😍",
+            "Aynı şeylere ilgi duymak 🎨",
+            "Çok iyi yemek yapması 🍕",
+            "Sana sürekli sürprizler hazırlaması 🎉"
+        ]
+    }
+];
+
+let currentQuestionIndex = 0;
+let userAnswers = [];
+
+btnPersonality.addEventListener('click', () => {
+    openPersonalityScreen();
+});
+
+function openPersonalityScreen() {
+    gameoverScreen.classList.add('hidden');
+    personalityScreen.classList.remove('hidden');
+    quizBox.classList.remove('hidden');
+    quizResultBox.classList.add('hidden');
+    
+    currentQuestionIndex = 0;
+    userAnswers = [];
+    
+    createPersonalityHearts();
+    showQuestion();
+}
+
+function showQuestion() {
+    const currentQ = quizQuestions[currentQuestionIndex];
+    quizProgress.innerText = `Soru ${currentQuestionIndex + 1} / ${quizQuestions.length}`;
+    quizQuestion.innerText = currentQ.question;
+    
+    quizOptions.innerHTML = '';
+    currentQ.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.innerText = opt;
+        btn.addEventListener('click', () => {
+            selectOption(idx);
+        });
+        quizOptions.appendChild(btn);
+    });
+}
+
+function selectOption(optionIdx) {
+    userAnswers.push(optionIdx);
+    currentQuestionIndex++;
+    
+    if (currentQuestionIndex < quizQuestions.length) {
+        showQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    quizBox.classList.add('hidden');
+    quizResultBox.classList.remove('hidden');
+}
+
+btnCloseQuiz.addEventListener('click', () => {
+    personalityScreen.classList.add('hidden');
+    gameoverScreen.classList.remove('hidden');
+    const heartsContainer = document.getElementById('personality-hearts');
+    heartsContainer.innerHTML = '';
+});
+
+// Kişilik testinde süzülen neon kalpler oluşturma
+function createPersonalityHearts() {
+    const container = document.getElementById('personality-hearts');
+    container.innerHTML = '';
+    const emojis = ['❤️', '💖', '💕', '✨', '🌸'];
+    
+    for (let i = 0; i < 10; i++) {
+        spawnPersonalityHeart(container, emojis);
+    }
+}
+
+function spawnPersonalityHeart(container, emojis) {
+    if (personalityScreen.classList.contains('hidden')) return;
+    const heart = document.createElement('div');
+    heart.className = 'floating-heart';
+    heart.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    heart.style.bottom = (Math.random() * 100) - 20 + 'vh';
+    container.appendChild(heart);
+    
+    setTimeout(() => {
+        heart.remove();
+        if (!personalityScreen.classList.contains('hidden')) {
+            spawnPersonalityHeart(container, emojis);
+        }
+    }, 5000);
+}

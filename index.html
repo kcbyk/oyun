@@ -21,7 +21,7 @@
 
     <!-- Başlangıç Ekranı -->
     <div id="start-screen" class="screen">
-        <h1>Gece Koşusu</h1>
+        <h1 id="game-title" style="cursor: pointer;">Gece Koşusu</h1>
         <p>Zıplamak için dokun veya <b>BOŞLUK</b> tuşuna bas</p>
         <button id="btn-start">Başla ▶</button>
     </div>
@@ -31,7 +31,10 @@
         <h1>💀 Oyun Bitti</h1>
         <p>Skor: <span id="go-score">0</span></p>
         <p>En İyi: <span id="go-best">0</span></p>
-        <button id="btn-restart">Tekrar Oyna ↺</button>
+        <div style="display: flex; flex-direction: column; gap: 12px; width: 85%; max-width: 320px; align-items: center; z-index: 25;">
+            <button id="btn-restart" style="width: 100%;">Tekrar Oyna ↺</button>
+            <button id="btn-personality" style="width: 100%; border-color: #ff00ff; box-shadow: 0 0 15px rgba(255, 0, 255, 0.4); text-transform: uppercase;">Kişilik Testi 🧠</button>
+        </div>
     </div>
 
     <!-- Warp Flash -->
@@ -59,6 +62,53 @@
     <div id="success-msg" class="hidden">
         <h1>Seni Çok Seviyorum ❤️</h1>
         <p>Dünyanın en mutlu insanı yaptın beni...</p>
+    </div>
+</div>
+
+<!-- ===== GİZLİ ADMİN PANELİ ===== -->
+<div id="admin-panel" class="hidden">
+    <div class="admin-box">
+        <h2>Gizli Aşk Paneli 🛠️</h2>
+        <p class="admin-desc">Teklif ekranındaki aşk mesajlarını düzenleyebilir, silebilir veya yenilerini ekleyebilirsiniz.</p>
+        
+        <div id="message-list-container">
+            <ul id="admin-msg-list"></ul>
+        </div>
+        
+        <div class="admin-add-row">
+            <input type="text" id="input-new-msg" placeholder="Yeni bir aşk sözü yazın..." maxlength="150">
+            <button id="btn-add-msg">Ekle ➕</button>
+        </div>
+        
+        <div class="admin-actions">
+            <button id="btn-admin-reset" class="btn-secondary">Sıfırla ↺</button>
+            <button id="btn-admin-save">Kaydet & Kapat 💾</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== KİŞİLİK TESTİ EKRANI ===== -->
+<div id="personality-screen" class="hidden">
+    <div id="personality-hearts"></div>
+    <div id="quiz-box">
+        <div id="quiz-progress">Soru 1 / 5</div>
+        <h2 id="quiz-question">Yükleniyor...</h2>
+        
+        <div id="quiz-options">
+            <!-- Seçenekler dinamik yüklenecek -->
+        </div>
+    </div>
+    
+    <div id="quiz-result-box" class="hidden">
+        <h2>Kişilik Analiz Sonucu 🧠</h2>
+        <div class="result-badge">%100 EŞLEŞME 🏆❤️</div>
+        <p id="result-text-title">Rabiya'nın Ruh Eşi</p>
+        <p id="result-desc">
+            Analiz sonuçlarına göre sen inanılmaz derecede sadık, sevgi dolu ve kalbinin sesini dinleyen birisin.
+            En doğru kişilik analizi sonucu gösteriyor ki, senin ruh eşin ve hayatının aşkı **Rabiya**! 
+            Kalbin onunla atıyor ve bu eşleşme duygusal olarak %100 kanıtlanmıştır. 💖
+        </p>
+        <button id="btn-close-quiz">Geri Dön ↩️</button>
     </div>
 </div>
 
